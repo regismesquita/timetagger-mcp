@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "timetagger-mcp"
+version = "0.1.0"
+description = "TimeTagger MCP server"
+authors = [{name = "Regis Mesquita"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "httpx",
+    "pydantic",
+    "fastmcp",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/regismesquita/timetagger-mcp"
+"Bug Tracker" = "https://github.com/regismesquita/timetagger-mcp/issues"
+
+[project.scripts]
+timetagger-mcp = "timetagger_mcp:main"
