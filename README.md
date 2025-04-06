@@ -12,27 +12,7 @@ This is a Model Context Protocol (MCP) server for interacting with TimeTagger. I
 - Start and stop timers
 - Manage TimeTagger settings
 
-## Installation
-
-1. Install via UVX (recommended for Claude Desktop integration):
-   ```bash
-   uvx --from git+https://github.com/regismesquita/timetagger-mcp timetagger-mcp
-   ```
-
-2. Or install manually:
-   ```bash
-   pip install .
-   ```
-
-## Configuration
-
-### Environment Variables
-```bash
-export TIMETAGGER_API_KEY="your-api-key-here"
-export TIMETAGGER_API_URL="https://your-timetagger-instance.com/api/v2"
-```
-
-### Claude Desktop Configuration
+## Claude Desktop Installation
 Add this to your `claude_desktop_config.json`:
 ```json
 "timetagger": {
@@ -47,6 +27,27 @@ Add this to your `claude_desktop_config.json`:
     "TIMETAGGER_API_URL": "https://your-timetagger-instance.com/api/v2"
   }
 }
+```
+
+## Manual Installation
+
+1. Ensure you have [uv](https://github.com/astral-sh/uv) installed:
+   ```
+   brew install uv
+   ```
+
+2. Install the required dependencies:
+   ```
+   uv pip install -r requirements.txt
+   ```
+
+## Configuration
+
+The server requires your TimeTagger API key to be set as an environment variable:
+
+```
+export TIMETAGGER_API_KEY="your-api-key-here"
+export TIMETAGGER_API_URL="https://your-timetagger-instance.com/api/v2"
 ```
 
 ## Usage
