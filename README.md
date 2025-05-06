@@ -4,13 +4,11 @@ This is a Model Context Protocol (MCP) server for interacting with TimeTagger. I
 
 ## Features
 
-- Query time records within specific timeframes
-- Create new time records
-- Update existing records
-- Hide/delete records
-- Get time summaries by tags
-- Start and stop timers
+- Query time records with flexible filtering options (by time period, tags, etc.)
+- Manage records with a unified interface (create, update, hide, start/stop timers)
+- Analyze time data with various views (summary by tag, daily breakdown, hourly distribution)
 - Manage TimeTagger settings
+- Access server information and updates
 
 ## Claude Desktop Installation
 Add this to your `claude_desktop_config.json`:
@@ -72,18 +70,12 @@ fastmcp install timetagger_mcp.py
 
 ## Available Tools
 
-- `get_records(start_time, end_time)`: Get records within a time range
-- `get_recent_records(hours)`: Get records from the last N hours
-- `get_today_records()`: Get today's records
-- `create_record(description, start_time, end_time)`: Create a new record
-- `update_record(key, description, start_time, end_time)`: Update an existing record
-- `hide_record(key)`: Hide/delete a record
-- `start_timer(description)`: Start a new timer
-- `stop_timer(key)`: Stop an ongoing timer
-- `find_records_by_tag(tag, days)`: Find records with a specific tag
-- `get_time_summary(days)`: Get a summary of time spent on different tags
-- `get_settings()`: Get all TimeTagger settings
-- `update_setting(key, value)`: Update a TimeTagger setting
+- `get_records(start_time, end_time, time_period, tag)`: Get records with flexible filtering options
+- `manage_record(action, description, start_time, end_time, key)`: Create, update, hide, start, or stop records
+- `get_updates_since(since)`: Get records updated since a specific timestamp
+- `get_server_time()`: Get the current server time
+- `manage_settings(action, key, value)`: Get or update TimeTagger settings
+- `analyze_time(analysis_type, time_period, tag)`: Analyze time records with various options
 
 ## Available Resources
 
