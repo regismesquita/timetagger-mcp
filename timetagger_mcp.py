@@ -10,12 +10,12 @@ import json
 import os
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any
 
 import httpx
 from fastmcp import FastMCP
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 
 
 class TimeRecord(BaseModel):
@@ -27,6 +27,29 @@ class TimeRecord(BaseModel):
     ds: str  # Description
     mt: Optional[int] = None  # Modified time (set by client)
     st: Optional[float] = 0.0  # Server time (set by server)
+    is_running: Optional[bool] = None  # Derived field indicating if timer is running
+    start_time_iso8601: Optional[str] = None  # ISO8601 representation of t1
+    end_time_iso8601: Optional[str] = None  # ISO8601 representation of t2
+    modified_time_iso8601: Optional[str] = None  # ISO8601 representation of mt
+    server_time_iso8601: Optional[str] = None  # ISO8601 representation of st
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Set is_running field based on t1 and t2
+        self.is_running = self.t1 == self.t2
+        
+        # Convert all time fields to ISO8601 format
+        if self.t1:
+            self.start_time_iso8601 = datetime.fromtimestamp(self.t1, tz=timezone.utc).isoformat()
+        
+        if self.t2:
+            self.end_time_iso8601 = datetime.fromtimestamp(self.t2, tz=timezone.utc).isoformat()
+            
+        if self.mt:
+            self.modified_time_iso8601 = datetime.fromtimestamp(self.mt, tz=timezone.utc).isoformat()
+            
+        if self.st:
+            self.server_time_iso8601 = datetime.fromtimestamp(self.st, tz=timezone.utc).isoformat()
 
 
 class TimeSetting(BaseModel):
@@ -36,6 +59,18 @@ class TimeSetting(BaseModel):
     value: Any
     mt: Optional[int] = None  # Modified time (set by client)
     st: Optional[float] = 0.0  # Server time (set by server)
+    modified_time_iso8601: Optional[str] = None  # ISO8601 representation of mt
+    server_time_iso8601: Optional[str] = None  # ISO8601 representation of st
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        
+        # Convert timestamp fields to ISO8601 format
+        if self.mt:
+            self.modified_time_iso8601 = datetime.fromtimestamp(self.mt, tz=timezone.utc).isoformat()
+            
+        if self.st:
+            self.server_time_iso8601 = datetime.fromtimestamp(self.st, tz=timezone.utc).isoformat()
 
 
 # Create the MCP server
@@ -368,13 +403,18 @@ def get_updates_since(since: int) -> List[TimeRecord]:
         raise Exception(f"Error {response.status_code}: {response.text}")
 
 
+class ServerTime(BaseModel):
+    """Server time representation"""
+    unix_timestamp: float
+    iso8601: str
+
 @mcp.tool()
-def get_server_time() -> float:
+def get_server_time() -> ServerTime:
     """
     Get the current server time.
 
     Returns:
-        Server time as Unix timestamp
+        Server time as Unix timestamp and ISO8601 format
     """
     response = httpx.get(
         f"{API_BASE_URL}/updates?since={int(time.time())}", headers=get_headers()
@@ -382,7 +422,9 @@ def get_server_time() -> float:
 
     if response.status_code == 200:
         data = response.json()
-        return data["server_time"]
+        server_time = data["server_time"]
+        iso8601_time = datetime.fromtimestamp(server_time, tz=timezone.utc).isoformat()
+        return ServerTime(unix_timestamp=server_time, iso8601=iso8601_time)
     else:
         raise Exception(f"Error {response.status_code}: {response.text}")
 
